@@ -31,12 +31,20 @@ class User(AbstractUser):
     """Дополненный класс AbstractUser"""
 
     objects = UserManager()
-
+    username = ''
     email = models.EmailField(unique=True, blank=False)
     first_name = models.CharField(max_length=100, blank=False)
     last_name = models.CharField(max_length=100, blank=True, null=True)
-    date_joined = models.DateTimeField(auto_now_add=True)
+    date_joined = models.DateTimeField(auto_now=True)
+    telegram_url = models.URLField(max_length=255, blank=True)
+    about_user = models.CharField(max_length=255, blank=True)
+    phone_number = models.CharField(max_length=20, blank=True)
+    
+    
     activation_code =models.CharField(max_length=10, blank=True, null=True)
+    is_active = models.BooleanField(default=False)
+    is_staff = models.BooleanField(default=False)
+
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -54,5 +62,12 @@ class User(AbstractUser):
         allowed_chars='qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890'
         self.activation_code = get_random_string(length=10, allowed_chars=allowed_chars)
         self.save()
+
+class UserPhotos(models.Model):
+    image = models.ImageField(upload_to='userImages')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='userPhotos')
+
+    def __str__(self) -> str:
+        return self.user, self.pk
 
 
