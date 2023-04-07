@@ -2,7 +2,7 @@ from django.db import models
 from slugify import slugify
 
 class Category(models.Model):
-
+    
     class Meta:
         verbose_name_plural = 'Categories'
 
@@ -14,5 +14,9 @@ class Category(models.Model):
 
     def __str__(self) -> str:
         return self.slug
+    
+    def save(self, *args, **kwargs): 
+        self.slug = slugify(self.title)
+        return super().save(*args, **kwargs)
     
 

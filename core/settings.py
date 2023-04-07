@@ -22,12 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-c@#s2!u!#d5g64xa+e-ubz892(5ef&!r&r6q1kert+j-tv8k44'
+SECRET_KEY = config('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.1', 'localhost']
 
 AUTH_USER_MODEL = 'account.User'
 
@@ -46,6 +46,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'django_filters',
     'drf_yasg',
+    'debug_toolbar',
+    
 
     #django-apps
     'account',
@@ -53,9 +55,12 @@ INSTALLED_APPS = [
     'categories',
     'chat',
     'review',
+    'payment',
+    'news',
 ]
 
 MIDDLEWARE = [
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -175,6 +180,14 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379"
 # media
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
+
 # static
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'static'
+
+#debug-toolbar
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
