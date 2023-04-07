@@ -1,0 +1,58 @@
+from django.db import models
+from django.contrib.auth.base_user import BaseUserManager
+from django.contrib.auth.models import AbstractUser
+from slugify import slugify
+from django.utils.crypto import get_random_string
+
+
+class UserManager(BaseUserManager):
+    """Менеджер для создания разных типов юзеров"""
+    
+    def _create(self, email, password, **kwargs):
+        self.email = self.normalize_email(email)
+        user = self.model(email=email, **kwargs)
+        user.set_password(password)
+        user.create_activation_code()
+        user.save()
+        return user
+    
+    def create_user(self, email, password, **kwargs):
+        return self._create(email, password, **kwargs)
+    
+    def create_superuser(self, email, password, **kwargs):
+        user = self._create(email, password, **kwargs)
+        user.is_active = True
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+
+
+class User(AbstractUser):
+    """Дополненный класс AbstractUser"""
+
+    objects = UserManager()
+
+    email = models.EmailField(unique=True, blank=False)
+    first_name = models.CharField(max_length=100, blank=False)
+    last_name = models.CharField(max_length=100, blank=True, null=True)
+    date_joined = models.DateTimeField(auto_now_add=True)
+    activation_code =models.CharField(max_length=10, blank=True, null=True)
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = []
+
+    def __str__(self) -> str:
+        return self.email
+    
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.first_name)
+        return super().save(*args, **kwargs)
+    
+    def create_activation_code(self):
+        """Создает код активации из 10 символов для пользователя"""
+
+        allowed_chars='qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890'
+        self.activation_code = get_random_string(length=10, allowed_chars=allowed_chars)
+        self.save()
+
+
