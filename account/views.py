@@ -5,6 +5,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
+from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 from . import serializers
 
@@ -55,7 +57,7 @@ class UserViewSet(ModelViewSet):
         serializer = serializers.ForgotPasswordSerializer(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.send_verification_email()
-            return Response('You will receive a link to reset your password.')
+            return Response('Отправили email с кодом активации для продолжения восстановления доступа в аккаунт')
 
     @swagger_auto_schema(request_body=serializers.ForgotPasswordCompleteSerializer, tags=['account'])
     @action(detail=False, methods=['POST'])
@@ -65,10 +67,10 @@ class UserViewSet(ModelViewSet):
         )
         if serializer.is_valid(raise_exception=True):
             serializer.set_new_password()
-            message = 'Successful'
+            message = 'Успех!'
             return Response(serializer.validated_data)
         else:
-            message = 'Uncorrecct password'
+            message = 'Неправильный пароль!'
             return Response(message)
 
 
@@ -78,13 +80,34 @@ class ActivationView(APIView):
             email=email,
             activation_code=activation_code).first()
         if not user:
-            return Response('User is not found', status=400)
+            return Response('Пользователь не найден', status=400)
         user.activation_code = ''
         user.is_active = True
         user.save()
-        return Response('Activated', status=200)
+        return Response('Активирован!', status=200)
 
 
-
-
-
+class LoginView(TokenObtainPairView):
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        email = request.data.get('email')
+        try:
+            user = User.objects.get(email=email)
+        except Exception:
+            return  Response({'Ошибка':'Пользователь с таим имейл не существует!'}, status=401)
+        user_data = {'id': user.id,
+                     'first_name': user.first_name,
+                     'last_name': user.last_name,
+                     'telegram_url': user.telegram_url,
+                     'email': user.email,
+                     'date_joined': user.date_joined,
+                     'phone_number': user.phone_number,
+                     'about_user':user.about_user,
+                     'username':user.username}
+        new_data = list(user_data.items())
+        try:
+            serializer.is_valid(raise_exception=True)
+        except TokenError as e:
+            raise InvalidToken(e.args[0])
+        serializer.validated_data.update(new_data)
+        return Response(serializer.validated_data, status=200)
