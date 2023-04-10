@@ -12,5 +12,6 @@ router.register('account', views.UserViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('account/login/', TokenObtainPairView.as_view()),
-    path('account/refresh', TokenRefreshView.as_view())
+    path('account/refresh', TokenRefreshView.as_view()),
+    path('activate/<str:email>/<str:activation_code>/', views.ActivationView.as_view(), name='activate')
 ]
