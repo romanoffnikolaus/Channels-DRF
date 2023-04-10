@@ -4,7 +4,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
-
+from rest_framework.views import APIView
 from . import serializers
 
 
@@ -61,6 +61,18 @@ class UserViewSet(ModelViewSet):
         else:
             message = 'Uncorrecct password'
             return Response(message)
+        
+class ActivationView(APIView):
+    def get(self, request, email, activation_code):
+        user = User.objects.filter(
+            email=email,
+            activation_code=activation_code).first()
+        if not user:
+            return Response('User is not found', status=400)
+        user.activation_code = ''
+        user.is_active = True
+        user.save()
+        return Response('Activated', status=200)
 
 
 
