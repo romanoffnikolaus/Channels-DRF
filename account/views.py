@@ -5,6 +5,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.views import APIView
+
 from . import serializers
 
 
@@ -38,7 +39,15 @@ class UserViewSet(ModelViewSet):
     @swagger_auto_schema(request_body=serializers.ChangePasswordSerializer, tags=['account'])
     @action(detail=False, methods=['POST'])
     def change_password(self, request, *args, **kwargs):
-        pass
+        serializer = serializers.ChangePasswordSerializer(
+            data=request.data, context={'request': request}
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.set_new_password()
+            message = 'Смена пароля прошла успешно'
+        else:
+            message = 'Введен некорректный пароль'
+        return Response(message)
 
     @swagger_auto_schema(request_body=serializers.ForgotPasswordSerializer, tags=['account'])
     @action(detail=False, methods=['POST'])
@@ -51,7 +60,7 @@ class UserViewSet(ModelViewSet):
     @swagger_auto_schema(request_body=serializers.ForgotPasswordCompleteSerializer, tags=['account'])
     @action(detail=False, methods=['POST'])
     def forgot_password_complete(self, request, *args, **kwargs):
-        serializer = serializers.ChangePasswordSerializer(
+        serializer = serializers.ForgotPasswordCompleteSerializer(
             data=request.data, context={'request': request}
         )
         if serializer.is_valid(raise_exception=True):
@@ -61,7 +70,8 @@ class UserViewSet(ModelViewSet):
         else:
             message = 'Uncorrecct password'
             return Response(message)
-        
+
+
 class ActivationView(APIView):
     def get(self, request, email, activation_code):
         user = User.objects.filter(
