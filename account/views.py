@@ -2,9 +2,11 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
+from rest_framework.response import Response
 from drf_yasg.utils import swagger_auto_schema
 
 from . import serializers
+
 
 User = get_user_model()
 
@@ -41,8 +43,24 @@ class UserViewSet(ModelViewSet):
     @swagger_auto_schema(request_body=serializers.ForgotPasswordSerializer, tags=['account'])
     @action(detail=False, methods=['POST'])
     def forgot_password(self, request, *args, **kwargs):
-        pass
+        serializer = serializers.ForgotPasswordSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            serializer.send_verification_email()
+            return Response('You will receive a link to reset your password.')
 
+    @swagger_auto_schema(request_body=serializers.ForgotPasswordCompleteSerializer, tags=['account'])
+    @action(detail=False, methods=['POST'])
+    def forgot_password_complete(self, request, *args, **kwargs):
+        serializer = serializers.ChangePasswordSerializer(
+            data=request.data, context={'request': request}
+        )
+        if serializer.is_valid(raise_exception=True):
+            serializer.set_new_password()
+            message = 'Successful'
+            return Response(serializer.validated_data)
+        else:
+            message = 'Uncorrecct password'
+            return Response(message)
 
 
 
