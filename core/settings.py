@@ -27,7 +27,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.1', 'localhost', '0.0.0.0']
+ALLOWED_HOSTS = ['127.0.0.1', '0.0.0.1', 'localhost', '0.0.0.0', '104.199.175.143']
 
 AUTH_USER_MODEL = 'account.User'
 
@@ -165,7 +165,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 #CORS
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000', 'http://localhost:3000', 'http://0.0.0.0:8000',
+    'http://127.0.0.1:8000', 'http://localhost:3000', 'http://0.0.0.0:8000', 'http://localhost:5173/', 'http://104.199.175.143'
 ]
 CORS_ALLOWED_METHODS = [
     'GET', 'POST', 'PATCH', 'PUT', 'OPTIONS'
@@ -173,8 +173,8 @@ CORS_ALLOWED_METHODS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # celery settings
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://redis:6379"
+CELERY_RESULT_BACKEND = "redis://redis:6379"
 
 
 # media
