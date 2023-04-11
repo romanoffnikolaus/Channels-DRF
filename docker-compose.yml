@@ -1,0 +1,74 @@
+version: '3.3'
+
+services:
+
+  main_api:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: main_api
+    volumes:
+      - static_volume:/enactus/static
+      - media_volume:/enactus/media
+    command: >
+          sh -c "python manage.py collectstatic --noinput &&
+                 python manage.py migrate &&
+                 gunicorn --bind 0.0.0.0:8000 core.wsgi"
+    env_file:
+      - .env
+    ports:
+      - 8000:8000
+    expose:
+      - 8000
+    depends_on:
+      - redis
+    
+
+  redis:
+    image: redis:alpine
+    hostname: redis
+   
+
+  celery:
+    build: 
+      context: .
+    env_file:
+      - .env
+    command: >
+      sh -c 'celery -A core worker -l info'
+    volumes:
+      - .:/enactus
+    links:
+      - redis
+    depends_on:
+      - redis
+      - main_api
+
+
+  nginx:
+    build: 
+      dockerfile: Dockerfile
+      context: ./docker_nginx/nginx
+    container_name: nginx
+    image: nginx
+    volumes:
+      - static_volume:/enactus/static
+      - media_volume:/enactus/media
+    depends_on:
+      - main_api
+    ports:
+      - "80:80"
+      - "443:443"
+    restart: always
+
+
+volumes: 
+  static_volume:
+  media_volume:
+
+
+
+
+
+    
+  

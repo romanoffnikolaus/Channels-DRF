@@ -3,14 +3,23 @@ from rest_framework import serializers
 from django.core.mail import send_mail
 
 from .tasks import send_activation_code_celery
+from announcement.models import Announcement
+from announcement.serializers import AnnouncementSerializer
 
 User = get_user_model()
 
+
 class Profileserializer(serializers.ModelSerializer):
+    users_announsments = serializers.SerializerMethodField()
 
     class Meta:
         model = User
         fields = '__all__'
+
+    def get_users_announsments(self, instance):
+        programs = Announcement.objects.filter(user=instance)
+        program_serializer = AnnouncementSerializer(programs, many=True)
+        return program_serializer.data
 
 
 class Registrationserializer(serializers.ModelSerializer):
