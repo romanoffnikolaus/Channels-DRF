@@ -7,6 +7,7 @@ from . models import Category
 User = get_user_model()
 
 class CategorySerializer(serializers.ModelSerializer):
+    slug = serializers.ReadOnlyField()
     
     class Meta:
         model = Category

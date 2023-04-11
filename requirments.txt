@@ -10,3 +10,4 @@ drf-yasg
 celery
 redis
 pillow
+gunicorn

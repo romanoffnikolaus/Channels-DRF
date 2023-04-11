@@ -11,3 +11,4 @@ celery
 redis
 pillow
 django-debug-toolbar
+gunocorn

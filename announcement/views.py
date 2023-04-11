@@ -1,14 +1,41 @@
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.parsers import MultiPartParser
+from rest_framework.response import Response
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from drf_yasg.utils import swagger_auto_schema
+import django_filters
+from rest_framework import filters
 
 from . import serializers
 from . import models
+from . import permissions as prm
 
 
+class PermissionsMixin():
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            permissions = [AllowAny]
+        elif self.action in ['create']:
+            permissions = [IsAuthenticated]
+        elif self.action in ['update', 'partial_update', 'destroy', ]:
+            permissions = [prm.IsOwnerOrReadOnly]
+        else:
+            permissions = [AllowAny]
+        return [permission() for permission in permissions]
 
-class AnnouncementViewSet(ModelViewSet):
+
+class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
     queryset = models.Announcement.objects.all()
     serializer_class = serializers.AnnouncementSerializer
+    filter_backends = [
+        django_filters.rest_framework.DjangoFilterBackend,
+        filters.SearchFilter,
+        filters.OrderingFilter]
+    search_fields = ['title', 'location']
+    filterset_fields = ['title', 'location', 'category', 'price']
+    ordering_fields = ['created_at', 'price', 'views_count']
+    ordordering = ['created_at']
+    parser_classes = [MultiPartParser]
 
     @swagger_auto_schema(tags=['announcements'])
     def list(self, request, *args, **kwargs):
@@ -16,15 +43,46 @@ class AnnouncementViewSet(ModelViewSet):
     
     @swagger_auto_schema(tags=['announcements'])
     def retrieve(self, request, *args, **kwargs):
-        return super().retrieve(request, *args, **kwargs)
+        instance = self.get_object()
+        instance.views_count += 1 
+        instance.save()
+        serializer = self.get_serializer(instance)
+        announsment_photos = instance.announcementImages.all()
+        announsment_photo_serializer = serializers.AnnouncePhotoSerializer(announsment_photos, many=True)
+        response_data = {**serializer.data,'photos':announsment_photo_serializer.data,}
+        return Response(response_data)
     
     @swagger_auto_schema(request_body=serializer_class, tags=['announcements'])    
     def create(self, request, *args, **kwargs):
-        return super().create(request, *args, **kwargs)
+        photos = request.FILES.getlist('photos')
+        data = request.data.copy()
+        data.pop('photos', None)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        announcement = serializer.save(user=self.request.user)
+        images = [models.AnnouncementPhoto(announcement=announcement, image=image) for image in photos]
+        models.AnnouncementPhoto.objects.bulk_create(images)
+        return Response(serializer.data, status=201)
     
     @swagger_auto_schema(request_body=serializer_class, tags=['announcements'])
     def update(self, request, *args, **kwargs):
-        return super().update(request, *args, **kwargs)
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        images = request.FILES.getlist('photos')
+        data = request.data.copy()
+        data.pop('photos', None)
+        serializer = self.get_serializer(instance, data=data, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if images:
+            models.AnnouncementPhoto.objects.filter(announcement=instance).delete()
+            announcement_photos = [models.AnnouncementPhoto(announcement=instance, image=image) for image in images]
+            models.AnnouncementPhoto.objects.bulk_create(announcement_photos)
+        response_data = serializer.data
+        report_images = instance.announcementImages.all()
+        announsment_photo_serializer = serializers.AnnouncePhotoSerializer(report_images, many=True)
+        response_data['photos'] = announsment_photo_serializer.data
+        return Response(response_data)
     
     @swagger_auto_schema(request_body=serializer_class, tags=['announcements'])    
     def destroy(self, request, *args, **kwargs):

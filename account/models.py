@@ -62,6 +62,7 @@ class User(AbstractUser):
         allowed_chars='qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM1234567890'
         self.activation_code = get_random_string(length=10, allowed_chars=allowed_chars)
         self.save()
+        
 
 class UserPhotos(models.Model):
     image = models.ImageField(upload_to='userImages')
