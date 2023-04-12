@@ -9,6 +9,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
 from . import serializers
+from catalog.serializers import CatalogSerializer
+from .tasks import send_notification_email
+from .permissions import IsOwnerOrReadOnly
 
 
 User = get_user_model()
@@ -32,15 +35,18 @@ class UserViewSet(ModelViewSet):
     
     @swagger_auto_schema(request_body=serializer_class, tags=['account'])
     def update(self, request, *args, **kwargs):
+        self.permission_classes = [IsOwnerOrReadOnly,]
         return super().update(request, *args, **kwargs)
     
     @swagger_auto_schema(request_body=serializer_class, tags=['account'])    
     def destroy(self, request, *args, **kwargs):
+        self.permission_classes = [IsOwnerOrReadOnly,]
         return super().destroy(request, *args, **kwargs)
     
     @swagger_auto_schema(request_body=serializers.ChangePasswordSerializer, tags=['account'])
     @action(detail=False, methods=['POST'])
     def change_password(self, request, *args, **kwargs):
+        self.permission_classes = [IsOwnerOrReadOnly,]
         serializer = serializers.ChangePasswordSerializer(
             data=request.data, context={'request': request}
         )
@@ -72,9 +78,23 @@ class UserViewSet(ModelViewSet):
         else:
             message = 'Неправильный пароль!'
             return Response(message)
+    
+    @swagger_auto_schema(request_body=CatalogSerializer, tags=['account'])
+    @action(methods=['POST'], detail=True)
+    def add_adress(self, request, pk=None):
+        self.permission_classes = [IsOwnerOrReadOnly,]
+        serializer = CatalogSerializer(data=request.data)
+        if serializer.is_valid(raise_exception=True):
+            catalog = serializer.save(user=self.get_object())
+            email = request.user.email
+            send_notification_email(email)
+            return Response(CatalogSerializer(catalog).data, status=201)
+        else:
+            return Response(serializer.errors, status=400)
 
 
 class ActivationView(APIView):
+    @swagger_auto_schema(tags=['account'])
     def get(self, request, email, activation_code):
         user = User.objects.filter(
             email=email,
@@ -88,6 +108,7 @@ class ActivationView(APIView):
 
 
 class LoginView(TokenObtainPairView):
+    @swagger_auto_schema(tags=['account'])
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         email = request.data.get('email')

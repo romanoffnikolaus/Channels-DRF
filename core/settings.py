@@ -57,6 +57,7 @@ INSTALLED_APPS = [
     'review',
     'payment',
     'news',
+    'catalog',
 ]
 
 MIDDLEWARE = [
@@ -173,8 +174,8 @@ CORS_ALLOWED_METHODS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # celery settings
-CELERY_BROKER_URL = "redis://redis:6379"
-CELERY_RESULT_BACKEND = "redis://redis:6379"
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
 
 
 # media

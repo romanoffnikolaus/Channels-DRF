@@ -8,7 +8,7 @@ class Category(models.Model):
 
     title = models.CharField(max_length=50, blank=False, unique=True)
     description = models.TextField(max_length=255, blank=True, null=True)
-    slug = models.SlugField(primary_key=True, blank=False)
+    slug = models.SlugField(primary_key=True, blank=True)
     created_at = models.DateTimeField(auto_now=True)
     updated_at = models.DateTimeField(auto_now_add=True)
 

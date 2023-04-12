@@ -49,6 +49,9 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
 
+    class Meta:
+        indexes = [models.Index(fields=['email']),]
+
     def __str__(self) -> str:
         return self.email
     
