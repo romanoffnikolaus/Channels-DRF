@@ -20,5 +20,3 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Announcement
         fields = '__all__'
-
-

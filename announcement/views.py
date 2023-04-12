@@ -2,6 +2,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.parsers import MultiPartParser
 from rest_framework.response import Response
 from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.decorators import action
 from drf_yasg.utils import swagger_auto_schema
 import django_filters
 from rest_framework import filters
@@ -9,6 +10,7 @@ from rest_framework import filters
 from . import serializers
 from . import models
 from . import permissions as prm
+from review.serializers import CommentSerializer
 
 
 class PermissionsMixin():
@@ -37,6 +39,16 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
     ordordering = ['created_at']
     parser_classes = [MultiPartParser]
 
+    @action(['POST'], detail=True)
+    def comment(self, request, pk=None):
+        self.permission_classes = [IsAuthenticated]
+        announcement = self.get_object()
+        serializer = CommentSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            serializer.save(announsment=announcement)
+            return Response(serializer.data, status=201)
+        return Response(serializer.errors, status=400)
+
     @swagger_auto_schema(tags=['announcements'])
     def list(self, request, *args, **kwargs):
         return super().list(request, *args, **kwargs)
@@ -49,9 +61,12 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
         serializer = self.get_serializer(instance)
         announsment_photos = instance.announcementImages.all()
         announsment_photo_serializer = serializers.AnnouncePhotoSerializer(announsment_photos, many=True)
-        response_data = {**serializer.data,'photos':announsment_photo_serializer.data,}
+        response_data = {**serializer.data, 'photos': announsment_photo_serializer.data}
+        comments = instance.comment.all()
+        comment_serializer = CommentSerializer(comments, many=True)
+        response_data['comments'] = comment_serializer.data
         return Response(response_data)
-    
+
     @swagger_auto_schema(request_body=serializer_class, tags=['announcements'])    
     def create(self, request, *args, **kwargs):
         photos = request.FILES.getlist('photos')

@@ -1,5 +1,7 @@
 from rest_framework.viewsets import ModelViewSet
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.permissions import IsAdminUser, AllowAny
+
 from . models import Category
 from . import serializers
 
@@ -27,3 +29,10 @@ class CategoryViewSet(ModelViewSet):
     @swagger_auto_schema(request_body=serializer_class, tags=['categories'])    
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+    
+    def get_permissions(self):
+        if self.action in ['list', 'retrieve']:
+            self.permission_classes = [AllowAny,]
+        else: 
+            self.permission_classes = [IsAdminUser,]
+        return super().get_permissions()
