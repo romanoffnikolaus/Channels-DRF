@@ -17,7 +17,7 @@ class Profileserializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_users_announsments(self, instance):
-        programs = Announcement.objects.filter(user=instance)
+        programs = instance.announcements.filter(user=instance).prefetch_related('announcementImages')
         program_serializer = AnnouncementSerializer(programs, many=True)
         return program_serializer.data
 

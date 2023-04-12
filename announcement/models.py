@@ -1,6 +1,8 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 from slugify import slugify
+from datetime import datetime, timedelta
+from django.db.models.functions import TruncMonth
 
 from categories.models import Category
 
@@ -30,6 +32,17 @@ class Announcement(models.Model):
     def save(self, *agrs, **kwargs):
         self.slug = slugify(self.title)
         return super().save(*agrs, **kwargs)
+
+    def get_today_count(self):
+        today = datetime.now().date()
+        return Announcement.objects.filter(created_at__date=today).count()
+
+    def get_month_count(self):
+        month_ago = datetime.now().date() - timedelta(days=30)
+        return Announcement.objects.filter(created_at__date__gte=month_ago).count()
+
+    get_today_count.short_description = 'Today Count'
+    get_month_count.short_description = 'Month Count'
 
 
 class AnnouncementPhoto(models.Model):

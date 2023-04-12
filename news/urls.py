@@ -4,7 +4,7 @@ from . import views
 
 
 router = DefaultRouter()
-
+router.register('news', views.NewsView)
 
 
 urlpatterns = [

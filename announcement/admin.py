@@ -1,13 +1,11 @@
 from django.contrib import admin
 
-from announcement.models import Announcement, AnnouncementPhoto
+from .models import Announcement
 
 
-class AnnouncementPhoto(admin.TabularInline):
-    model = AnnouncementPhoto
+class AnnouncementAdmin(admin.ModelAdmin):
+    list_display = ('title', 'user', 'category', 'created_at', 'updated_at', 'get_today_count', 'get_month_count')
+    list_filter = ('category__title', 'location')
 
+admin.site.register(Announcement, AnnouncementAdmin)
 
-@admin.register(Announcement)
-class Announcement(admin.ModelAdmin):
-    list_display = ('user', 'title', 'created_at')
-    inlines = [AnnouncementPhoto]
