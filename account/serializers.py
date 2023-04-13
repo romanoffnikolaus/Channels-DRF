@@ -40,6 +40,7 @@ class Registrationserializer(serializers.ModelSerializer):
             'telegram_url',
             'about_user',
             'phone_number',
+            'image',
         ]
 
     def validate(self, attrs):
