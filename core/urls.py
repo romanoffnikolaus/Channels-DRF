@@ -38,6 +38,7 @@ urlpatterns = [
     path('', include('categories.urls')),
     path('', include('news.urls')),
     path('', include('catalog.urls')),
+    path('', include('review.urls')),
     path('__debug__/', include('debug_toolbar.urls'))
 ]
 

@@ -23,3 +23,8 @@ class AnnouncementComment(models.Model):
 
     def __str__(self):
         return f'{self.user} comment on: {self.announsment}'
+    
+
+class ForumPost(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_forum_posts')
+    body = models.TextField(max_length=255)
