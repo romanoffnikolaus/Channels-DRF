@@ -39,6 +39,7 @@ class User(AbstractUser):
     telegram_url = models.URLField(max_length=255, blank=True)
     about_user = models.CharField(max_length=255, blank=True)
     phone_number = models.CharField(max_length=20, blank=True)
+    image = models.ImageField(upload_to='profile/', blank=True)
     
     
     activation_code =models.CharField(max_length=10, blank=True, null=True)
