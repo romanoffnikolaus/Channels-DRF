@@ -135,12 +135,11 @@ class LoginView(TokenObtainPairView):
         password = request.data.get('password')
         try:
             user = User.objects.get(email=email)
-            ser = serializers.Profileserializer(instance=user)
+            user_data = serializers.Profileserializer(instance=user).data
             if not user.check_password(password):
                 raise Exception
         except Exception:
             return  Response({'Ошибка':'Пользователь с такими данными не существует!'}, status=401)
-        new_data = ser.data
         data = super().post(request, *args, **kwargs).data
-        data.update(new_data)
+        data.update(user_data)
         return Response(data)
