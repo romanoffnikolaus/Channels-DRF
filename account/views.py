@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -8,10 +9,12 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 
+
 from . import serializers
 from catalog.serializers import CatalogSerializer
 from .tasks import send_notification_email
 from .permissions import IsOwnerOrReadOnly
+
 
 
 User = get_user_model()
@@ -112,20 +115,15 @@ class LoginView(TokenObtainPairView):
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         email = request.data.get('email')
+        password = request.data.get('password')
         try:
             user = User.objects.get(email=email)
+            ser = serializers.Profileserializer(instance=user)
+            if not user.check_password(password):
+                raise Exception
         except Exception:
-            return  Response({'Ошибка':'Пользователь с таим имейл не существует!'}, status=401)
-        user_data = {'id': user.id,
-                     'first_name': user.first_name,
-                     'last_name': user.last_name,
-                     'telegram_url': user.telegram_url,
-                     'email': user.email,
-                     'date_joined': user.date_joined,
-                     'phone_number': user.phone_number,
-                     'about_user':user.about_user,
-                     'username':user.username}
-        new_data = list(user_data.items())
+            return  Response({'Ошибка':'Пользователь с такими данными не существует!'}, status=401)
+        new_data = ser.data
         try:
             serializer.is_valid(raise_exception=True)
         except TokenError as e:
