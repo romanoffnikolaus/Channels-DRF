@@ -112,8 +112,25 @@ class ActivationView(APIView):
 
 class LoginView(TokenObtainPairView):
     @swagger_auto_schema(tags=['account'])
+    # def post(self, request, *args, **kwargs):
+    #     serializer = self.get_serializer(data=request.data)
+    #     email = request.data.get('email')
+    #     password = request.data.get('password')
+    #     try:
+    #         user = User.objects.get(email=email)
+    #         ser = serializers.Profileserializer(instance=user)
+    #         if not user.check_password(password):
+    #             raise Exception
+    #     except Exception:
+    #         return  Response({'Ошибка':'Пользователь с такими данными не существует!'}, status=401)
+    #     new_data = ser.data
+    #     try:
+    #         serializer.is_valid(raise_exception=True)
+    #     except TokenError as e:
+    #         raise InvalidToken(e.args[0])
+    #     serializer.validated_data.update(new_data)
+    #     return Response(serializer.validated_data, status=200)
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
         email = request.data.get('email')
         password = request.data.get('password')
         try:
@@ -124,9 +141,6 @@ class LoginView(TokenObtainPairView):
         except Exception:
             return  Response({'Ошибка':'Пользователь с такими данными не существует!'}, status=401)
         new_data = ser.data
-        try:
-            serializer.is_valid(raise_exception=True)
-        except TokenError as e:
-            raise InvalidToken(e.args[0])
-        serializer.validated_data.update(new_data)
-        return Response(serializer.validated_data, status=200)
+        data = super().post(request, *args, **kwargs).data
+        data.update(new_data)
+        return Response(data)
