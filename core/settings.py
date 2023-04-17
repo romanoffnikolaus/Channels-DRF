@@ -64,6 +64,7 @@ MIDDLEWARE = [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -166,7 +167,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 #CORS
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000', 'http://localhost:3000', 'http://0.0.0.0:8000', 'http://localhost:5173/', 'http://104.199.175.143'
+    'http://127.0.0.1:8000', 'http://localhost:3000', 'http://0.0.0.0:8000', 'http://localhost:5173/', 'http://104.199.175.143', 'https://zoo-shop-puce.vercel.app/'
 ]
 CORS_ALLOWED_METHODS = [
     'GET', 'POST', 'PATCH', 'PUT', 'OPTIONS'
