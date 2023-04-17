@@ -25,6 +25,7 @@ class Announcement(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     views_count = models.PositiveBigIntegerField(default=0)
+    phone_number = models.CharField(max_length=20, blank=False)
 
     def __str__(self) -> str:
         return self.title

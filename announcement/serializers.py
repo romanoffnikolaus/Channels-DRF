@@ -7,9 +7,16 @@ User = get_user_model()
 
 
 class AnnouncePhotoSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
     class Meta:
         model = models.AnnouncementPhoto
-        fields = ('id', 'image', 'announcement')
+        fields = ('id', 'image', 'announcement', 'image_url')
+    
+    def get_image_url(self, obj): #Изменить URL перед деплоем. Это костыль.
+        if obj.image:
+            return f'https://doamin/media/{obj.image.name}'
+        return None
+
 
 
 class AnnouncementSerializer(serializers.ModelSerializer):
