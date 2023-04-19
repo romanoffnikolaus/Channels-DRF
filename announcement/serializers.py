@@ -14,7 +14,7 @@ class AnnouncePhotoSerializer(serializers.ModelSerializer):
     
     def get_image_url(self, obj): #Изменить URL перед деплоем. Это костыль.
         if obj.image:
-            return f'https://doamin/media/{obj.image.name}'
+            return f'https://enactusanimals.com/media/{obj.image.name}'
         return None
 
 
