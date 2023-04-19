@@ -30,3 +30,7 @@ make down:
 
 make docker-admin:
 	docker-compose exec main_api python manage.py createsuperuser
+
+
+make arun:
+	uvicorn core.asgi:application --reload

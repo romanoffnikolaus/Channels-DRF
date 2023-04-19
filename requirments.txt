@@ -11,3 +11,7 @@ celery
 redis
 pillow
 gunicorn
+channels
+channels_redis
+uvicorn[standard]
+wsproto
