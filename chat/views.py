@@ -1,5 +1,6 @@
 # chat/views.py
 from django.shortcuts import render
+import django.core.handlers.asgi
 
 def index(request):
     return render(request, 'chat/index.html', {})
@@ -7,8 +8,9 @@ def index(request):
 def room(request, customer, seller):
     room_name = customer
 
+
     return render(request, 'chat/room.html', {
         # 'room_name': room_name,
         'seller': seller,
-        'customer': customer,
+        'customer': customer
     })
