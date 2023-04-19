@@ -33,7 +33,7 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
         django_filters.rest_framework.DjangoFilterBackend,
         filters.SearchFilter,
         filters.OrderingFilter]
-    search_fields = ['title', 'location']
+    search_fields = ['title', 'location', 'description']
     filterset_fields = ['title', 'location', 'category', 'price']
     ordering_fields = ['created_at', 'price', 'views_count']
     ordordering = ['created_at']
@@ -51,6 +51,11 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
 
     @swagger_auto_schema(tags=['announcements'])
     def list(self, request, *args, **kwargs):
+        data_keys = request.data.keys()
+        if 'lower_price' in data_keys and 'higher_price' in data_keys:
+            low = request.data['lower_price']
+            high = request.data['higher_price']
+            self.queryset = models.Announcement.objects.filter(price__range =(low, high))
         return super().list(request, *args, **kwargs)
     
     @swagger_auto_schema(tags=['announcements'])

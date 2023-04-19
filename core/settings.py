@@ -34,6 +34,8 @@ AUTH_USER_MODEL = 'account.User'
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'chat',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -53,7 +55,6 @@ INSTALLED_APPS = [
     'account',
     'announcement',
     'categories',
-    'chat',
     'review',
     'payment',
     'news',
@@ -92,6 +93,14 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 ASGI_APPLICSTION = 'core.asgi.application'
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 
 # Database
@@ -175,8 +184,8 @@ CORS_ALLOWED_METHODS = [
 CORS_ORIGIN_ALLOW_ALL = True
 
 # celery settings
-CELERY_BROKER_URL = "redis://localhost:6379"
-CELERY_RESULT_BACKEND = "redis://localhost:6379"
+CELERY_BROKER_URL = "redis://redis:6379/0"
+CELERY_RESULT_BACKEND = "redis://redis:6379/0"
 
 
 # media

@@ -39,6 +39,7 @@ urlpatterns = [
     path('', include('news.urls')),
     path('', include('catalog.urls')),
     path('', include('review.urls')),
+    path('chat/', include('chat.urls')),
     path('__debug__/', include('debug_toolbar.urls'))
 ]
 
