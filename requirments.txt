@@ -15,3 +15,4 @@ channels
 channels_redis
 uvicorn[standard]
 wsproto
+django-debug-toolbar
