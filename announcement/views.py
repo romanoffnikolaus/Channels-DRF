@@ -38,7 +38,21 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
     ordering_fields = ['created_at', 'price', 'views_count']
     ordordering = ['created_at']
     parser_classes = [MultiPartParser]
-
+    
+    @swagger_auto_schema(tags=['announcements'])
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        data_keys = request.data.keys()
+        if 'lower_price' in data_keys and 'higher_price' in data_keys:
+            low = request.data['lower_price']
+            high = request.data['higher_price']
+            queryset = queryset.filter(price__range=(low, high))
+        serializer = self.get_serializer(queryset, many=True)
+        for i in range(len(queryset)):
+            photos = queryset[i].announcementImages.all()
+            serializer.data[i]['photos'] = serializers.AnnouncePhotoSerializer(photos, many=True).data
+        return Response(serializer.data)
+    
     @action(['POST'], detail=True)
     def comment(self, request, pk=None):
         self.permission_classes = [IsAuthenticated]
@@ -48,15 +62,6 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
             serializer.save(announsment=announcement)
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
-
-    @swagger_auto_schema(tags=['announcements'])
-    def list(self, request, *args, **kwargs):
-        data_keys = request.data.keys()
-        if 'lower_price' in data_keys and 'higher_price' in data_keys:
-            low = request.data['lower_price']
-            high = request.data['higher_price']
-            self.queryset = models.Announcement.objects.filter(price__range =(low, high))
-        return super().list(request, *args, **kwargs)
     
     @swagger_auto_schema(tags=['announcements'])
     def retrieve(self, request, *args, **kwargs):
