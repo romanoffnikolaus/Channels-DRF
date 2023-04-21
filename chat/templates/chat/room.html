@@ -16,7 +16,7 @@
     <script>
         const seller = JSON.parse(document.getElementById('room_name').textContent);
         const customer = JSON.parse(document.getElementById('room_name2').textContent);
-        const roomName = customer + '_' + seller
+        const roomName = customer + '_' + 'chat'
 
 
 
@@ -30,6 +30,7 @@
 
         chatSocket.onmessage = function(e) {
             const data = JSON.parse(e.data);
+            console.log(data)
             document.querySelector('#chat-log').value += (data.message + '\n' );
         };
 
@@ -50,7 +51,10 @@
             chatSocket.send(JSON.stringify({
                 'message': message,
                 'customer_id': customer,
-                'seller_id': seller
+                'seller_id': seller,
+                'author_id': customer,
+                'announcement_slug': 'chat' 
+                
             }));
             messageInputDom.value = '';
         };
