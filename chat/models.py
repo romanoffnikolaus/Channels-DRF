@@ -4,18 +4,17 @@ from announcement.models import Announcement
 
 class Room(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer_rooms')
-    seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='seller_rooms')
+    # seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='seller_rooms')
     announcement = models.ForeignKey(Announcement, models.CASCADE)
     def __str__(self) -> str:
-        return f'{self.customer.id} | {self.seller.id}'
+        return f'{self.customer.id} | {self.announcement} | {self.announcement.user.id}'
 
 
 class Message(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=False)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room_messages')
-
-    # author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='w
+    author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_messages')
 
     @property
     def publishdate(self):
