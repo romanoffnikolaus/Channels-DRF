@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Announcement
+from .models import Announcement, AnnouncementPhoto
 
 
 class AnnouncementAdmin(admin.ModelAdmin):
@@ -8,4 +8,4 @@ class AnnouncementAdmin(admin.ModelAdmin):
     list_filter = ('category__title', 'location')
 
 admin.site.register(Announcement, AnnouncementAdmin)
-
+admin.site.register(AnnouncementPhoto)
