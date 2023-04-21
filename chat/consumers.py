@@ -19,6 +19,7 @@ class ChatConsumer(WebsocketConsumer):
         self.room_group_name = 'chat_%s' % self.room_name
         users = self.room_name.split('_')
         check = models.Room.objects.filter(customer = users[0],seller=users[1]).exists()
+        print(self.scope)
 
         queryset = models.User.objects.filter(Q(id=users[0])|Q(id=users[-1]))
         customer = queryset[0] if str(queryset[0].id) == users[0] else queryset[1]
