@@ -4,8 +4,10 @@ import django.core.handlers.asgi
 from rest_framework import generics
 from rest_framework.response import Response
 
-from .models import Room, Message, Announcement
+from .models import Room, Message, Announcement, User
 from .serializers import YourChatsSerializer, Roomserializer
+from .consumers import domain
+from account.serializers import Profileserializer
 
 
 def index(request):
@@ -34,14 +36,30 @@ class YourChatListView(generics.ListAPIView):
         data = super().list(self,request, *args, **kwargs).data + rooms_queryset
         for room_data in data:
             room_id = room_data['id']
+            if request.user.id == room_data['customer']:
+                other_user = Announcement.objects.get(slug=room_data['announcement']).user
+                room_photo = domain + Profileserializer(other_user).data['image']
+                if not room_photo:
+                    room_photo = None
+            else:
+                other_user = User.objects.get(id=room_data['customer'])
+                room_photo = domain + Profileserializer(other_user).data['image']
+                if not room_photo:
+                    room_photo = None
+            room_data['photo'] = room_photo
             last_message = Message.objects.filter(room_id=room_id).order_by('-date').first()
             if last_message:
+
                 room_data['last_message'] = {
                     'content': last_message.content,
                     'author': last_message.author.id,
                     'date': last_message.publishdate,
+                    'author_name': last_message.author.first_name,
+                    
+
                 }
             else:
                 room_data['last_message'] = None
+            
         return Response(data, 200)
     
