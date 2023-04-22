@@ -63,7 +63,7 @@ class ChatConsumer(WebsocketConsumer):
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
             self.room_group_name,
-            {
+            {   
                 'type': 'chat_message',
                 'message': message.content,
                 'date': str(message.publishdate),
@@ -83,5 +83,5 @@ class ChatConsumer(WebsocketConsumer):
 
         # Send message to WebSocket
         self.send(text_data=json.dumps({
-            'message': message,
+            'messages': [message],
         }))
