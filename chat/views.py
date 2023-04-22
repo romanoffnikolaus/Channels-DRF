@@ -32,12 +32,9 @@ class YourChatListView(generics.ListAPIView):
         announcement_rooms = Roomserializer(user_announcements, many=True).data
         rooms_queryset = [room for item in announcement_rooms for room in item['rooms'] ]
         data = super().list(self,request, *args, **kwargs).data + rooms_queryset
-        # print(data)
         for room_data in data:
             room_id = room_data['id']
-            # print(room_id)
             last_message = Message.objects.filter(room_id=room_id).order_by('-date').first()
-            print(last_message)
             if last_message:
                 room_data['last_message'] = {
                     'content': last_message.content,
