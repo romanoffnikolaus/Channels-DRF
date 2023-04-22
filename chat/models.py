@@ -2,14 +2,15 @@ from django.db import models
 from account.models import User
 from announcement.models import Announcement
 
+
 class Room(models.Model):
     customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer_rooms')
-    # seller = models.ForeignKey(User, on_delete=models.CASCADE, related_name='seller_rooms')
-    announcement = models.ForeignKey(Announcement, models.CASCADE)
+    announcement = models.ForeignKey(Announcement, models.CASCADE, related_name='rooms')
+
     def __str__(self) -> str:
         return f'{self.customer.id} | {self.announcement} | {self.announcement.user.id}'
 
-
+    
 class Message(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     content = models.TextField(blank=False)

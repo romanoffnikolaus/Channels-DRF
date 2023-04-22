@@ -22,9 +22,6 @@ class ChatConsumer(WebsocketConsumer):
         check = models.Room.objects.filter(customer = room_data[0], announcement=room_data[1]).exists()
         customer = models.User.objects.get(id=room_data[0])
         announcement = models.Announcement.objects.get(slug=room_data[1])
-        # queryset = models.User.objects.filter(Q(id=users[0])|Q(id=users[1]))
-        # customer = queryset[0] if str(queryset[0].id) == users[0] else queryset[1]
-        # seller = queryset[1] if str(queryset[1].id) == users[1] else queryset[0] 
         if not check:
             self.room = models.Room.objects.create(customer = customer, announcement=announcement)
         else:
