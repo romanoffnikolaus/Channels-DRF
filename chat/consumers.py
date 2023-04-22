@@ -10,9 +10,12 @@ import json
 from asgiref.sync import async_to_sync
 from channels.generic.websocket import WebsocketConsumer
 from . import models
+from account.serializers import Profileserializer
+from announcement.serializers import AnnouncePhotoSerializer
 from django.db.models import Q
 
 
+domain = 'http://127.0.0.1:8000'
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
@@ -30,20 +33,42 @@ class ChatConsumer(WebsocketConsumer):
             self.room_group_name,
             self.channel_name
         )
-        print(self.__dict__)
-
+        try:
+            announcement_photo = announcement.announcementImages.all()[0]
+            announcement_photo = AnnouncePhotoSerializer(announcement_photo).data['image_url']
+        except Exception:
+            announcement_photo = None
+        finally:
+            announcement_title = announcement.title
+            announcement_slug = announcement.slug
+            announcement_author = announcement.user.first_name
+            announcement_price = announcement.price
         self.accept()
         history = self.room.room_messages.all()
         history_data = [
             {'date': message.publishdate,
              'name': message.author.first_name,
              'id': str(message.author.id),
-             'text': message.content
-            }
+             'text': message.content,
+             'user image': domain + Profileserializer(message.author).data['image'],
+            } 
+            if Profileserializer(message.author).data['image'] else 
+            {'date': message.publishdate,
+             'name': message.author.first_name,
+             'id': str(message.author.id),
+             'text': message.content,
+             'user image': None,
+            } 
             for message in history
         ]
-        # for i in history_data:
         self.send(text_data=json.dumps({
+            'announcement':{
+            'photo': announcement_photo,
+            'title': announcement_title,
+            'slug':announcement_slug,
+            'author': announcement_author,
+            'price': str(announcement_price)
+            },
             'messages': history_data}))
 
     def disconnect(self, close_code):
@@ -58,7 +83,8 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         user = models.User.objects.get(id=text_data_json['author_id'])
-        
+        user_image = domain + Profileserializer(user).data['image']
+    
         message =models.Message.objects.create(content=message, room = self.room, author=user)
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
@@ -68,7 +94,8 @@ class ChatConsumer(WebsocketConsumer):
                 'message': message.content,
                 'date': str(message.publishdate),
                 'user_name': user.first_name,
-                'user_id': str(user.id)
+                'user_id': str(user.id),
+                'user_image': user_image
             }
         )
 
@@ -78,7 +105,8 @@ class ChatConsumer(WebsocketConsumer):
             'date': event['date'],
             'name': event['user_name'],
             'id': event['user_id'],
-            'text': event['message']
+            'text': event['message'],
+            'image': event['user_image']
         }
 
         # Send message to WebSocket

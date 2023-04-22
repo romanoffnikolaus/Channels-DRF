@@ -16,6 +16,7 @@ class Message(models.Model):
     content = models.TextField(blank=False)
     room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='room_messages')
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user_messages')
+    # photo = models.ImageField(upload_to='messageImages/')
 
     @property
     def publishdate(self):
