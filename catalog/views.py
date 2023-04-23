@@ -10,4 +10,7 @@ class CatalogListView(ListAPIView):
     serializer_class = CatalogSerializer
     filter_backends = [
         django_filters.rest_framework.DjangoFilterBackend]
-    filterset_fields = ['adress_type']
+    filterset_fields = ['adress_type', 'location']
+    search_fields = ['title']
+    
+
