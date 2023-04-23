@@ -42,9 +42,9 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
     @swagger_auto_schema(tags=['announcements'])
     def list(self, request, *args, **kwargs):
         price_range =self.request.query_params.get('price_range')
-        splitet_range = price_range[1:-1].split(',')
         queryset = self.filter_queryset(self.get_queryset())
         if price_range:
+            splitet_range = price_range[1:-1].split(',')
             queryset = queryset.filter(price__range=splitet_range)
         serializer = self.get_serializer(queryset, many=True)
         for i in range(len(queryset)):
