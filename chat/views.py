@@ -39,13 +39,19 @@ class YourChatListView(generics.ListAPIView):
             room_id = room_data['id']
             if request.user.id == room_data['customer']:
                 other_user = Announcement.objects.get(slug=room_data['announcement']).user
-                room_photo = domain + Profileserializer(other_user).data['image']
-                if not room_photo:
+                room_data['other_name'] = other_user.first_name 
+                try:
+                    room_photo = domain + Profileserializer(other_user).data['image']
+                except:
                     room_photo = None
             else:
                 other_user = User.objects.get(id=room_data['customer'])
-                room_photo = domain + Profileserializer(other_user).data['image']
-                if not room_photo:
+                name = other_user.first_name
+                print(name)
+                room_data['other_name'] = name
+                try:
+                    room_photo = domain + Profileserializer(other_user).data['image']
+                except:
                     room_photo = None
             room_data['photo'] = room_photo
             last_message = Message.objects.filter(room_id=room_id).order_by('-date').first()
