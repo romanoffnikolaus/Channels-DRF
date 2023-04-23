@@ -18,4 +18,4 @@ class CatalogSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Catalog
-        fields = ('adress', 'adress_type', 'id','user')
+        fields = ('__all__')

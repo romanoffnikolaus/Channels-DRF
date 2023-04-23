@@ -49,12 +49,13 @@ class YourChatListView(generics.ListAPIView):
             room_data['photo'] = room_photo
             last_message = Message.objects.filter(room_id=room_id).order_by('-date').first()
             if last_message:
-
+                author_photo = domain + Profileserializer(last_message.author.image)['image']
                 room_data['last_message'] = {
                     'content': last_message.content,
                     'author': last_message.author.id,
                     'date': last_message.publishdate,
                     'author_name': last_message.author.first_name,
+                    
                     
 
                 }
@@ -62,4 +63,7 @@ class YourChatListView(generics.ListAPIView):
                 room_data['last_message'] = None
             
         return Response(data, 200)
+    
+
+
     
