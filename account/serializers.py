@@ -60,12 +60,12 @@ class Registrationserializer(serializers.ModelSerializer):
     
     def validate_telegram_url(self, telegram_url):
         if not telegram_url.startswith('https://t.me/'):
-            raise serializers.ValidationError('Uncorrect telegram link. Example: "https://t.me/Username"')
+            raise serializers.ValidationError('Введен неправильный формат ссылки. Пример: "https://t.me/Username"')
         return telegram_url
     
     def validate_phone_number(self, phone_number: str):
         if not phone_number.startswith('+996') or phone_number.startswith('+7') and phone_number[1:].isnumeric():
-            raise serializers.ValidationError('Uncorrect format for phone number. Example: +74952222222 or +996700400400')
+            raise serializers.ValidationError('Номер телефона указан без кода страны. Пример: +74952222222 or +996700400400')
         return phone_number
     
 
@@ -89,13 +89,13 @@ class ChangePasswordSerializer(serializers.ModelSerializer):
         new_password = attrs.get("new_password")
         new_password_confirm = attrs.pop('new_password_confirm')
         if new_password != new_password_confirm:
-            raise serializers.ValidationError('Password mismatch!')
+            raise serializers.ValidationError('Пароли не совпадают!')
         return attrs
 
     def validate_old_password(self, old_password):
         user = self.context['request'].user
         if not user.check_password(old_password):
-            raise serializers.ValidationError('Uncorrecct password')
+            raise serializers.ValidationError('Неправильный пароль')
         return old_password
 
     def set_new_password(self):
@@ -110,7 +110,7 @@ class ForgotPasswordSerializer(serializers.Serializer):
 
     def validate_email(self, email):
         if not User.objects.filter(email=email).exists():
-            raise serializers.ValidationError("User is not found")
+            raise serializers.ValidationError("Пользователь не найден")
         return email
 
     def send_verification_email(self):
@@ -137,9 +137,9 @@ class ForgotPasswordCompleteSerializer(serializers.Serializer):
         password1 = attrs.get('password')
         password2 = attrs.get('password_confirm')
         if not User.objects.filter(email=email, activation_code=code).exists():
-            raise serializers.ValidationError('User is not found or wrong activation code')
+            raise serializers.ValidationError('Неправильный пользователь или код активации')
         if password1 != password2:
-            raise serializers.ValidationError('Password mismatch!')
+            raise serializers.ValidationError('Пароли не совпадают')
         return attrs
 
     def set_new_password(self):
