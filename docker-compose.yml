@@ -86,7 +86,6 @@ volumes:
   media_volume:
   db_volume:
   etc-letsencrypt:
-  certbot:
 
 
 

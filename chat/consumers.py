@@ -83,8 +83,10 @@ class ChatConsumer(WebsocketConsumer):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
         user = models.User.objects.get(id=text_data_json['author_id'])
-        user_image = domain + Profileserializer(user).data['image']
-    
+        try:
+            user_image = domain + Profileserializer(user).data['image']
+        except:
+            user_image = None
         message =models.Message.objects.create(content=message, room = self.room, author=user)
         # Send message to room group
         async_to_sync(self.channel_layer.group_send)(
