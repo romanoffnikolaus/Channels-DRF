@@ -15,7 +15,7 @@ from announcement.serializers import AnnouncePhotoSerializer
 from django.db.models import Q
 
 
-domain = 'http://127.0.0.1:8000'
+domain = 'https://enactusanimals.com'
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
