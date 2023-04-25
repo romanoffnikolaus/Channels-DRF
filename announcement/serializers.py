@@ -47,4 +47,4 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     def get_user_name(self, instance):
         user_name = instance.user.first_name
         return user_name
-
+    
