@@ -47,6 +47,10 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
         if lower_price and higher_price:
             # splitet_range = price_range[1:-1].split(',')
             queryset = queryset.filter(price__range=(lower_price, higher_price))
+        elif lower_price and not higher_price:
+            queryset = queryset.filter(price__range=(lower_price, 1000000))
+        elif not lower_price and higher_price:
+            queryset = queryset.filter(price__range=(lower_price, higher_price))
         serializer = self.get_serializer(queryset, many=True)
         for i in range(len(queryset)):
             photos = queryset[i].announcementImages.all()
