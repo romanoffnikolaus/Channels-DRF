@@ -202,3 +202,7 @@ INTERNAL_IPS = [
     "127.0.0.1",
     # ...
 ]
+
+
+#CSRF 
+CSRF_TRUSTED_ORIGINS=['https://enactusanimals.com', 'http://enactusanimals.com']
