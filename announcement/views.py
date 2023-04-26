@@ -10,6 +10,7 @@ from rest_framework import filters
 from . import serializers
 from . import models
 from . import permissions as prm
+from review.models import Favorite
 from review.serializers import CommentSerializer
 
 
@@ -35,7 +36,7 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
         filters.OrderingFilter]
     search_fields = ['title', 'description']
     filterset_fields = ['title', 'location', 'category', 'price']
-    ordering_fields = ['created_at', 'price', 'views_count']
+    ordering_fields = ['created_at', 'price', 'views_count', 'rating']
     ordering = ['created_at']
     parser_classes = [MultiPartParser]
     
@@ -45,7 +46,6 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
         higher_price =self.request.query_params.get('higher_price')
         queryset = self.filter_queryset(self.get_queryset())
         if lower_price and higher_price:
-            # splitet_range = price_range[1:-1].split(',')
             queryset = queryset.filter(price__range=(lower_price, higher_price))
         elif lower_price and not higher_price:
             queryset = queryset.filter(price__range=(lower_price, 1000000))
@@ -116,3 +116,21 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
     @swagger_auto_schema(request_body=serializer_class, tags=['announcements'])    
     def destroy(self, request, *args, **kwargs):
         return super().destroy(request, *args, **kwargs)
+    
+    @action(['POST'], detail=True)
+    def favorite(self, request, pk):
+        self.permission_classes = [IsAuthenticated]
+        announcement = self.get_object()
+        user = request.user
+        try:
+            favorite = Favorite.objects.get(announcement=announcement, user=user)
+            favorite.is_favorite = not favorite.is_favorite
+            favorite.save()
+            message = 'Объявление добавлено в избранное' if favorite.is_favorite else 'Объявление удалено из избранного'
+            if not favorite.is_favorite:
+                favorite.delete()
+        except Favorite.DoesNotExist:
+            Favorite.objects.create(
+                announcement=announcement, user=user, is_favorite=True)
+            message = 'Объявление добавлено в избранноое'
+        return Response(message, status=200)

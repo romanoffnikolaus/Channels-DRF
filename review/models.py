@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth import get_user_model
 
 from announcement.models import Announcement
+from announcement.models import Announcement
 
 User = get_user_model()
 
@@ -10,7 +11,16 @@ class Like(models.Model):
     pass
 
 class Favorite(models.Model):
-    pass
+    user = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='favorites')
+    announcement = models.ForeignKey(Announcement, on_delete=models.CASCADE)
+    is_favorite = models.BooleanField(default=False)
+
+    def __str__(self) -> str:
+        return f'{self.announcement.title} in favorites of user: {self.user.id}'
+    
 
 class UserComment(models.Model):
     pass
