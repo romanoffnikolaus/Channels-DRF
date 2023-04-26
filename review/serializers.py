@@ -1,7 +1,8 @@
 from rest_framework import serializers
 
-from .models import AnnouncementComment, ForumPost
+from .models import AnnouncementComment, ForumPost, Favorite
 from announcement.serializers import AnnouncementSerializer
+from announcement import models
 
 
 class CommentSerializer(serializers.ModelSerializer):
@@ -29,4 +30,11 @@ class ForumSerializer(serializers.ModelSerializer):
         post = ForumPost.objects.create(user=user, **validated_data)
         return post
 
-    
+
+class FavoritesSerializer(serializers.ModelSerializer):
+    user = serializers.ReadOnlyField(source='user.id')
+    announsment = AnnouncementSerializer(read_only=True, source='announcement')
+
+    class Meta:
+        model = Favorite
+        fields = '__all__'

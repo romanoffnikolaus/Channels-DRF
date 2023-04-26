@@ -1,6 +1,9 @@
 from django.urls import path
-from .views import ForumPostView
+
+from . import views
 
 urlpatterns = [
-    path('forum/', ForumPostView.as_view())
+    path('forum/', views.ForumPostView.as_view()),
+    path('favorites/', views.FavoritesView.as_view()),
+    path('favorites/<int:pk>/', views.FavoritesView.as_view()),
 ]

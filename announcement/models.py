@@ -26,6 +26,7 @@ class Announcement(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     views_count = models.PositiveBigIntegerField(default=0)
     phone_number = models.CharField(max_length=20, blank=False)
+    rating = models.DecimalField(blank=True, null=True, max_digits=10, decimal_places=2)    
 
     def __str__(self) -> str:
         return self.title
