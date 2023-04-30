@@ -22,7 +22,7 @@ class AnnouncePhotoSerializer(serializers.ModelSerializer):
     
     def get_image_url(self, obj): #Изменить URL перед деплоем. Это костыль.
         if obj.image:
-            return f'https://enactusanimals.com/media/{obj.image.name}'
+            return f'https://zoonet.me/media/{obj.image.name}'
         return None
 
 
@@ -42,7 +42,7 @@ class AnnouncementSerializer(serializers.ModelSerializer):
     def get_user_photo(self, instance):
         image = UserImageSerializer(instance.user).data['image']
         if image:
-           image = 'https://enactusanimals.com' + UserImageSerializer(instance.user).data['image']
+           image = 'https://zoonet.me' + UserImageSerializer(instance.user).data['image']
         return image
     
     def get_user_name(self, instance):
