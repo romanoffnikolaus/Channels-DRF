@@ -7,6 +7,7 @@ class News(models.Model):
     slug = models.SlugField(blank=True)
     body = models.CharField(max_length=150, blank=False)
     image = models.ImageField(upload_to='news/', blank=True)
+    short_description = models.CharField(max_length=255, blank=False)
 
     def __str__(self) -> str:
         return self.title
