@@ -4,7 +4,7 @@ from django.core.mail import send_mail
 
 from .tasks import send_activation_code_celery
 from announcement.models import Announcement
-from announcement.serializers import AnnouncementSerializer
+from announcement.serializers import AnnouncementSerializer, AnnouncePhotoSerializer
 
 User = get_user_model()
 
@@ -19,6 +19,9 @@ class Profileserializer(serializers.ModelSerializer):
     def get_users_announsments(self, instance):
         programs = instance.announcements.filter(user=instance).prefetch_related('announcementImages')
         program_serializer = AnnouncementSerializer(programs, many=True)
+        for i in range(len(programs)):
+            photos = programs[i].announcementImages.all()
+            program_serializer.data[i]['photos'] = AnnouncePhotoSerializer(photos, many=True).data
         return program_serializer.data
 
 
