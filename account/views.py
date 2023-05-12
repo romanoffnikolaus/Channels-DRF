@@ -136,7 +136,7 @@ class LoginView(TokenObtainPairView):
         try:
             user = User.objects.get(email=email)
             user_data = serializers.Profileserializer(instance=user).data
-            user_data['image'] = 'http://pidaras' + user_data['image']
+            user_data['image'] = 'https://zoointer.net' + user_data['image']
             if not user.check_password(password):
                 raise Exception
         except Exception:
