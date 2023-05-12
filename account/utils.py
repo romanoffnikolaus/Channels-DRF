@@ -15,7 +15,7 @@ def send_activation_code(email, activation_code):
     send_mail(
         'Активация аккаунта!',
         message,
-        'romanoffnikolaus@gmail.com',
+        'enuctusanimalsproject@gmail.com',
         [email],
         html_message=msg_html,
         fail_silently=False
