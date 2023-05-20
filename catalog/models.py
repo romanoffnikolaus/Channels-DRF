@@ -17,6 +17,12 @@ class Catalog(models.Model):
     phone_number = models.CharField(blank=False, max_length=20)
     loc_choices = (('Бишкек', 'Бишкек'), ('Ош', 'Ош'), ('Нарын', 'Нарын'), ('Иссык-куль','Иссык-куль'), ('Баткен', 'Баткен'), ('Талас','Талас'), ('Джалал-Абад','Джалал-Абад'))
     location = models.CharField(blank=False, max_length=20, choices=loc_choices)
+    description = models.TextField(blank=True, max_length=1024)
+    schedule = models.CharField(blank=True, max_length=50)
+    rating = models.IntegerField(blank=True)
+    social_media = models.CharField(blank=True, max_length=255)
+    web_site = models.CharField(blank=True, max_length=255)
+
 
     def __str__(self) -> str:
         return self.adress
