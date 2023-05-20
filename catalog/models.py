@@ -19,7 +19,7 @@ class Catalog(models.Model):
     location = models.CharField(blank=False, max_length=20, choices=loc_choices)
     description = models.TextField(blank=True, max_length=1024)
     schedule = models.CharField(blank=True, max_length=50)
-    rating = models.IntegerField(blank=True)
+    rating = models.IntegerField(blank=True, null=True)
     social_media = models.CharField(blank=True, max_length=255)
     web_site = models.CharField(blank=True, max_length=255)
 
