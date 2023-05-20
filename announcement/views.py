@@ -55,7 +55,11 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
         for i in range(len(queryset)):
             photos = queryset[i].announcementImages.all()
             serializer.data[i]['photos'] = serializers.AnnouncePhotoSerializer(photos, many=True).data
-        return Response(serializer.data)
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
     
     @action(['POST'], detail=True)
     def comment(self, request, pk=None):

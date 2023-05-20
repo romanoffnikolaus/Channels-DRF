@@ -8,6 +8,9 @@ class News(models.Model):
     body = models.CharField(max_length=150, blank=False)
     image = models.ImageField(upload_to='news/', blank=True)
     short_description = models.CharField(max_length=255, blank=False)
+    body2 = models.CharField(max_length=255, blank=True)
+    body3 = models.CharField(max_length=255, blank=True)
+    body4 = models.CharField(max_length=255, blank=True)
 
     def __str__(self) -> str:
         return self.title
