@@ -7,7 +7,7 @@ def send_activation_code(email, activation_code):
     context = {
         'text_detail': 'спасибо за регистрацию',
         'email': email,
-        'domain': 'https://zoonet.me',
+        'domain': 'https://zoointer.net',
         'activation_code': activation_code
     }
     msg_html = render_to_string('activation.html', context)
@@ -15,7 +15,7 @@ def send_activation_code(email, activation_code):
     send_mail(
         'Активация аккаунта!',
         message,
-        'romanoffnikolaus@gmail.com',
+        'zoonet.kg@gmail.com',
         [email],
         html_message=msg_html,
         fail_silently=False

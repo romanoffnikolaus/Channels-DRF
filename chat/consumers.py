@@ -15,11 +15,12 @@ from announcement.serializers import AnnouncePhotoSerializer
 from django.db.models import Q
 
 
-domain = 'https://zoonet.me'
+domain = 'https://zoointer.net'
 
 class ChatConsumer(WebsocketConsumer):
     def connect(self):
         self.room_name = self.scope['url_route']['kwargs']['room_name']
+        print(self.scope)
         self.room_group_name = 'chat_%s' % self.room_name
         room_data = self.room_name.split('_')
         check = models.Room.objects.filter(customer = room_data[0], announcement=room_data[1]).exists()
@@ -50,14 +51,14 @@ class ChatConsumer(WebsocketConsumer):
              'name': message.author.first_name,
              'id': str(message.author.id),
              'text': message.content,
-             'user image': domain + Profileserializer(message.author).data['image'],
+             'user_image': domain + Profileserializer(message.author).data['image'],
             } 
             if Profileserializer(message.author).data['image'] else 
             {'date': message.publishdate,
              'name': message.author.first_name,
              'id': str(message.author.id),
              'text': message.content,
-             'user image': None,
+             'user_image': None,
             } 
             for message in history
         ]
@@ -108,7 +109,7 @@ class ChatConsumer(WebsocketConsumer):
             'name': event['user_name'],
             'id': event['user_id'],
             'text': event['message'],
-            'image': event['user_image']
+            'user_image': event['user_image']
         }
 
         # Send message to WebSocket

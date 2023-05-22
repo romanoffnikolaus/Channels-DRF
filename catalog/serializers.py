@@ -19,3 +19,10 @@ class CatalogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Catalog
         fields = ('__all__')
+
+    def validate_rating(self, rating):
+        if rating < 1 and rating > 5:
+            raise serializers.ValidationError(
+                'Значение рейтинга должно быть от 1 до 5'
+            )
+        return rating
