@@ -51,13 +51,13 @@ class AnnouncementViewSet(PermissionsMixin, ModelViewSet):
             queryset = queryset.filter(price__range=(lower_price, 1000000))
         elif not lower_price and higher_price:
             queryset = queryset.filter(price__range=(lower_price, higher_price))
-        serializer = self.get_serializer(queryset, many=True)
-        for i in range(len(queryset)):
-            photos = queryset[i].announcementImages.all()
-            serializer.data[i]['photos'] = serializers.AnnouncePhotoSerializer(photos, many=True).data
         page = self.paginate_queryset(queryset)
+        # serializer = self.get_serializer(queryset, many=True)
         if page is not None:
             serializer = self.get_serializer(page, many=True)
+            for i in range(len(page)):
+                photos = page[i].announcementImages.all()
+                serializer.data[i]['photos'] = serializers.AnnouncePhotoSerializer(photos, many=True).data
             return self.get_paginated_response(serializer.data)
 
     

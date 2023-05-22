@@ -180,7 +180,7 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
 
 #CORS
 CORS_ALLOWED_ORIGINS = [
-    'http://127.0.0.1:8000', 'http://localhost:3000', 'http://0.0.0.0:8000', 'http://localhost:5173/', 'http://104.199.175.143', 'https://zoo-shop-puce.vercel.app/', 'https://zoonet.me'
+    'http://127.0.0.1:8000', 'http://localhost:3000', 'http://0.0.0.0:8000', 'http://localhost:5173/', 'http://104.199.175.143', 'https://zoo-shop-puce.vercel.app/', 'https://zoonet.me', 'https://zoointer.net'
 ]
 CORS_ALLOWED_METHODS = [
     'GET', 'POST', 'PATCH', 'PUT', 'OPTIONS'
@@ -210,4 +210,4 @@ INTERNAL_IPS = [
 
 
 #CSRF 
-CSRF_TRUSTED_ORIGINS=['https://enactusanimals.com', 'http://enactusanimals.com', 'http://zoonet.me', 'https://zoonet.me']
+CSRF_TRUSTED_ORIGINS=['https://enactusanimals.com', 'http://enactusanimals.com', 'http://zoonet.me', 'https://zoonet.me', 'https://zoointer.net']
