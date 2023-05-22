@@ -18,7 +18,7 @@ class Announcement(models.Model):
     title = models.CharField(max_length=100, blank=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='announcements')
     price = models.DecimalField(blank=True, null = True, max_digits=10, decimal_places=2)
-    slug = models.SlugField(blank=True, primary_key=True)
+    slug = models.SlugField(blank=True, primary_key=True, max_length=100)
     description = models.TextField(blank=True)
     loc_choices = (('Бишкек', 'Бишкек'), ('Ош', 'Ош'), ('Нарын', 'Нарын'), ('Иссык-куль','Иссык-куль'), ('Баткен', 'Баткен'), ('Талас','Талас'), ('Джалал-Абад','Джалал-Абад'))
     location = models.CharField(blank=False, max_length=20, choices=loc_choices)
