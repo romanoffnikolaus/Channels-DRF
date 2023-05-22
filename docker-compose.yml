@@ -18,7 +18,7 @@ services:
     volumes:
       - static_volume:/enactus/static
       - media_volume:/enactus/media
-      - db_volume:/enactus/db
+      - db:/enactus/db
     command: >
           sh -c "python manage.py collectstatic --noinput &&
                  python manage.py migrate &&
