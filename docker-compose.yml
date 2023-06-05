@@ -76,13 +76,13 @@ services:
       - "443:443"
     restart: always
 
-  # certbot:
-  #   image: certbot/certbot
-  #   container_name: certbot
-  #   volumes: 
-  #     - ./certbot/conf:/etc/letsencrypt
-  #     - ./certbot/www:/var/www/certbot
-  #   command: certonly --webroot -w /var/www/certbot --force-renewal --email lalavitohack@gmail.com -d enactusanimals.com --agree-tos
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes: 
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    command: certonly --webroot -w /var/www/certbot --force-renewal --email lalavitohack@gmail.com -d enactusanimals.com --agree-tos
 
 volumes: 
   static_volume:
